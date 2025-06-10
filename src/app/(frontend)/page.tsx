@@ -35,10 +35,10 @@ export default async function HomePage() {
           <span>Gogoogle Keep</span>
         </div>
         <nav className="nav">
-          <a href="/">Home</a>
-          <a href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
+          <Link href="/">Home</Link>
+          <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
             Admin
-          </a>
+          </Link>
         </nav>
       </header>
 
@@ -70,9 +70,9 @@ export default async function HomePage() {
       {/* footer */}
       <footer className="footer">
         <p>Y'all wondering who made this?</p>
-        <a className="codeLink" href="https://www.instagram.com/eye0fsk4d1">
+        <Link className="codeLink" href="https://www.instagram.com/eye0fsk4d1">
           <code>Erdemirror</code>
-        </a>
+        </Link>
       </footer>
     </div>
   )

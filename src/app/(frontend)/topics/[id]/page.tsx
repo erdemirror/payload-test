@@ -7,6 +7,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import config from '@/payload.config'
 import '../../styles.css'
 import payloadConfig from '@/payload.config'
+import Link from 'next/link'
 
 export default async function TopicDetail({ params }: { params: { id: string } }) {
   const payloadConfig = await config
@@ -35,10 +36,10 @@ export default async function TopicDetail({ params }: { params: { id: string } }
             <span>Gogoogle Keep</span>
           </div>
           <nav className="nav">
-            <a href="/">Home</a>
-            <a href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
+            <Link href="/">Home</Link>
+            <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
               Admin
-            </a>
+            </Link>
           </nav>
         </header>
 
@@ -63,9 +64,9 @@ export default async function TopicDetail({ params }: { params: { id: string } }
         </main>
 
         <footer className="footer">
-          <a href="/" className="codeLink">
+          <Link href="/" className="codeLink">
             ← Back to topics
-          </a>
+          </Link>
         </footer>
       </div>
     )
