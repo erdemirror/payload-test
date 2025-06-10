@@ -59,7 +59,7 @@ export default async function TopicDetail({ params }: PageProps) {
               src={topic.image.url}
               alt={topic.title}
               width={600}
-              height={350}
+              height={600}
               className="topic-image"
             />
           )}

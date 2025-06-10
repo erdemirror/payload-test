@@ -56,7 +56,7 @@ export default async function HomePage() {
                     src={topic.image.url}
                     alt={topic.title}
                     width={400}
-                    height={250}
+                    height={400}
                     className="topic-image"
                   />
                 )}
