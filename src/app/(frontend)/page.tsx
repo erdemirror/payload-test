@@ -1,5 +1,6 @@
 import { headers as getHeaders } from 'next/headers'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
 import { fileURLToPath } from 'url'
@@ -48,27 +49,27 @@ export default async function HomePage() {
         <h2>Topics</h2>
         <div className="topics">
           {topics.docs.map((topic) => (
-            <div key={topic.id} className="topic-card">
-              {topic.image?.url && (
-                <Image
-                  src={topic.image.url}
-                  alt={topic.title}
-                  width={400}
-                  height={250}
-                  className="topic-image"
-                />
-              )}
-              <h3>{topic.title}</h3>
-              <p className="topic-date">{new Date(topic.date).toLocaleDateString()}</p>
-              {topic.description && <RichText content={topic.description} />}
-            </div>
+            <Link key={topic.id} href={`/topics/${topic.id}`} className="topic-card-link">
+              <div className="topic-card">
+                {topic.image && typeof topic.image === 'object' && topic.image.url && (
+                  <Image
+                    src={topic.image.url}
+                    alt={topic.title}
+                    width={400}
+                    height={250}
+                    className="topic-image"
+                  />
+                )}
+                <h3>{topic.title}</h3>
+              </div>
+            </Link>
           ))}
         </div>
       </main>
 
       {/* footer */}
       <footer className="footer">
-        <p>Y’all wondering who made this?</p>
+        <p>Y'all wondering who made this?</p>
         <a className="codeLink" href="https://www.instagram.com/eye0fsk4d1">
           <code>Erdemirror</code>
         </a>
