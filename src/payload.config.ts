@@ -1,11 +1,12 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { buildConfig } from 'payload'
+// storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import path from 'path'
+import { buildConfig } from 'payload'
+import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Topics } from './collections/Topics'
@@ -32,5 +33,8 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [payloadCloudPlugin()],
+  plugins: [
+    payloadCloudPlugin(),
+    // storage-adapter-placeholder
+  ],
 })
