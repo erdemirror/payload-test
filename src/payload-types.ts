@@ -159,7 +159,7 @@ export interface Topic {
   id: number;
   title: string;
   date: string;
-  description?: {
+  description: {
     root: {
       type: string;
       children: {
@@ -173,7 +173,7 @@ export interface Topic {
       version: number;
     };
     [k: string]: unknown;
-  } | null;
+  };
   image: number | Media;
   updatedAt: string;
   createdAt: string;

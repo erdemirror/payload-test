@@ -19,7 +19,8 @@ export const Topics: CollectionConfig = {
     {
       name: 'description',
       type: 'richText',
-      required: false,
+
+      required: true,
     },
     {
       name: 'image',

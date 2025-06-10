@@ -9,15 +9,22 @@ import '../../styles.css'
 import payloadConfig from '@/payload.config'
 import Link from 'next/link'
 
-export default async function TopicDetail({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function TopicDetail({ params }: PageProps) {
+  const { id } = await params
   const payloadConfig = await config
-  const payload = await getPayload({ config })
-  const headerMap = headers()
+  const payloadConfigResolved = await config
+  const payload = await getPayload({ config: payloadConfigResolved })
+  const headerMap = await headers()
 
   try {
     const topic = await payload.findByID({
       collection: 'topics',
-      id: params.id,
+      id: id,
     })
 
     if (!topic) return notFound()
