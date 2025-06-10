@@ -8,8 +8,6 @@ export default function MyForm() {
     title: '',
     date: '',
     description: '',
-    image: null as File | null,
-    alt: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -80,31 +78,19 @@ export default function MyForm() {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label htmlFor="image">Image</label>
           <input
-            type="file"
+            type="image"
             id="image"
             name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
-        </div>
-
-        {/* --- NEW SECTION FOR IMAGE ALT TEXT --- */}
-        <div>
-          <label htmlFor="alt">Image Alt Text</label>
-          <input
-            type="text"
-            id="alt"
-            name="alt"
-            value={formData.alt}
+            placeholder="e.g., helo"
             onChange={handleChange}
-            placeholder="e.g., A photo"
             required
           />
-        </div>
-        {/* --- END OF NEW SECTION --- */}
+        </div> */}
+
+        {/* --- NEW SECTION FOR IMAGE ALT TEXT --- */}
 
         <button type="submit">Submit</button>
       </form>
