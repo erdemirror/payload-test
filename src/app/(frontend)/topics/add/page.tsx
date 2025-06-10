@@ -9,7 +9,7 @@ export default function MyForm() {
     date: '',
     description: '',
     image: null as File | null,
-    alt: '', // Added alt text to the state
+    alt: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -31,9 +31,8 @@ export default function MyForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
+
     console.log(formData)
-    // You would typically send this data to an API endpoint
   }
 
   return (
