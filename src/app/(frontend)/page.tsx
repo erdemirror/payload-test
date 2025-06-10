@@ -69,7 +69,7 @@ export default async function HomePage() {
 
       {/* footer */}
       <footer className="footer">
-        <p>Y'all wondering who made this?</p>
+        <p>Y&apos;all wondering who made this?</p>
         <Link className="codeLink" href="https://www.instagram.com/eye0fsk4d1">
           <code>Erdemirror</code>
         </Link>
