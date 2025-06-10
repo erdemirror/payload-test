@@ -45,8 +45,13 @@ export default async function HomePage() {
       {/* main */}
       <main className="content">
         <h1>{user ? `${user.email} хам айн? Юу байна?` : 'Юу байна даа хамаа.'}</h1>
-
+        <Link href="/topics/add">
+          <button className="button-89" role="button">
+            Нэмэх
+          </button>
+        </Link>
         <h2>Topics</h2>
+
         <div className="topics">
           {topics.docs.map((topic) => (
             <Link key={topic.id} href={`/topics/${topic.id}`} className="topic-card-link">

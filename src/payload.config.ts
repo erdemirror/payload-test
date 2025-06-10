@@ -43,6 +43,4 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
-  // Remove this upload property - it's causing the error
-  // upload: vercelBlobStorage({...}),
 })
