@@ -13,7 +13,7 @@ export const GET = async (request: Request) => {
     // Get all media documents from the media collection
     const media = await payload.find({
       collection: 'media',
-      limit: 1000,
+      limit: 5,
       sort: '-createdAt',
       where: {
         mimeType: {

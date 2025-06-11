@@ -44,11 +44,15 @@ export default function AddTopicPage() {
     }))
   }
 
-  const handleImageSelect = (url: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      image: url,
-    }))
+  const handleImageSelect = (id: string) => {
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        image: id,
+      }
+      console.log('Selected image ID:', updated.image) // ✅ Logs the image ID
+      return updated
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,10 +143,10 @@ export default function AddTopicPage() {
                   alt={media.alt || 'Image'}
                   width={100}
                   height={100}
-                  onClick={() => handleImageSelect(media.url)}
+                  onClick={() => handleImageSelect(media.id)}
                   style={{
                     objectFit: 'cover',
-                    border: formData.image === media.url ? '3px solid blue' : '1px solid gray',
+                    border: formData.image === media.id ? '3px solid blue' : '1px solid gray',
                     cursor: 'pointer',
                   }}
                 />
