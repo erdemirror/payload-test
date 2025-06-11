@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import '../../styles.css'
 
-export default function MyForm() {
+export default function AddMediaPage() {
   const [formData, setFormData] = useState({
     image: null as File | null,
     alt: '',
@@ -26,10 +25,43 @@ export default function MyForm() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    console.log(formData)
+    if (!formData.image || !formData.alt) {
+      alert('Both image and alt text are required.')
+      return
+    }
+
+    const payloadFormData = new FormData()
+    payloadFormData.append('file', formData.image)
+    payloadFormData.append('alt', formData.alt)
+
+    try {
+      // Updated to point to your custom route
+      const res = await fetch('/my-route', {
+        method: 'POST',
+        body: payloadFormData,
+      })
+
+      if (!res.ok) {
+        const error = await res.text()
+        throw new Error(error)
+      }
+
+      const data = await res.json()
+      console.log('Upload successful:', data)
+      alert('Upload successful!')
+
+      // Reset form after successful upload
+      setFormData({
+        image: null,
+        alt: '',
+      })
+    } catch (err) {
+      console.error('Upload failed:', err)
+      alert('Upload failed. See console for details.')
+    }
   }
 
   return (
@@ -50,7 +82,6 @@ export default function MyForm() {
           />
         </div>
 
-        {/* --- NEW SECTION FOR IMAGE ALT TEXT --- */}
         <div>
           <label htmlFor="alt">Image Alt Text</label>
           <input
@@ -63,7 +94,6 @@ export default function MyForm() {
             required
           />
         </div>
-        {/* --- END OF NEW SECTION --- */}
 
         <button type="submit">Submit</button>
       </form>
