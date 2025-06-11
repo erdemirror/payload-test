@@ -62,7 +62,7 @@ export default async function TopicDetail({ params }: PageProps) {
                 alt={topic.title}
                 fill
                 className="topic-image"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'scale-down' }}
                 sizes="100vw"
               />
             </div>

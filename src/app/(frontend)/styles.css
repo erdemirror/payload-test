@@ -107,6 +107,12 @@ body {
   background: linear-gradient(90deg, #667eea, #764ba2);
   border-radius: 2px;
 }
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 400px; /* Or any height you want */
+  margin-bottom: 1rem;
+}
 
 /* --- TOPIC CARD STYLES --- */
 .topics {
