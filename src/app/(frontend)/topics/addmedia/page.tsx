@@ -50,7 +50,6 @@ export default function AddMediaPage() {
       }
 
       const data = await res.json()
-      console.log('Upload successful:', data)
       alert('Upload successful!')
 
       // Reset form after successful upload
@@ -59,7 +58,6 @@ export default function AddMediaPage() {
         alt: '',
       })
     } catch (err) {
-      console.error('Upload failed:', err)
       alert('Upload failed. See console for details.')
     }
   }

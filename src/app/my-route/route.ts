@@ -1,6 +1,8 @@
+// app/my-route/route.ts
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextRequest } from 'next/server'
+import { put } from '@vercel/blob'
 
 export const GET = async (request: Request) => {
   const payload = await getPayload({
@@ -14,6 +16,10 @@ export const GET = async (request: Request) => {
 
 export const POST = async (request: NextRequest) => {
   try {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return Response.json({ error: 'Vercel Blob token is not configured' }, { status: 500 })
+    }
+
     const payload = await getPayload({
       config: configPromise,
     })
@@ -26,33 +32,36 @@ export const POST = async (request: NextRequest) => {
       return Response.json({ error: 'File and alt text are required' }, { status: 400 })
     }
 
-    // Validate file type
+    // validate
     if (!file.type.startsWith('image/')) {
       return Response.json({ error: 'Only image files are allowed' }, { status: 400 })
     }
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    // vercel blob
+    const blob = await put(file.name, file, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    })
 
-    // Create the media document using Payload's API
     const media = await payload.create({
-      collection: 'media', // Make sure this matches your collection name
+      collection: 'media',
       data: {
         alt: alt,
-      },
-      file: {
-        data: buffer,
-        mimetype: file.type,
-        name: file.name,
-        size: file.size,
+        filename: file.name,
+        mimeType: file.type,
+        filesize: file.size,
+        url: blob.url,
       },
     })
 
     return Response.json({
       success: true,
-      data: media,
-      message: 'Media uploaded successfully',
+      data: {
+        ...media,
+        blobUrl: blob.url,
+        downloadUrl: blob.downloadUrl,
+      },
+      message: 'Media uploaded successfully to Vercel Blob',
     })
   } catch (error) {
     console.error('Media upload error:', error)
