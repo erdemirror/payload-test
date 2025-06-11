@@ -1,13 +1,20 @@
-import type { CollectionConfig } from 'payload'
+// collections/Users.ts
+import { CollectionConfig } from 'payload'
 
-export const Users: CollectionConfig = {
+const Users: CollectionConfig = {
   slug: 'users',
+  auth: true, // enables local authentication
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    // Add other profile fields here
   ],
 }
+
+export default Users

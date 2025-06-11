@@ -10,7 +10,7 @@ export const GET = async (request: Request) => {
       config: configPromise,
     })
 
-    // Get all media documents from the media collection
+    // Get all media documents from the media collectionn
     const media = await payload.find({
       collection: 'media',
       limit: 20,

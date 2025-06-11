@@ -35,7 +35,7 @@ export default function Home() {
   return (
     <StyledContainer>
       <StyledButton>
-        <StyledLink href="/topics">Lets dive in </StyledLink>
+        <StyledLink href="/login">Lets dive in </StyledLink>
       </StyledButton>
     </StyledContainer>
   )
