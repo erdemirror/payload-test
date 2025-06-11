@@ -1,7 +1,10 @@
 'use client'
-
+import config from '@/payload.config'
+import dynamic from 'next/dynamic'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
+import LexicalEditor from '../../components/LexicalEditor' // ✅ correct path
+import Link from 'next/link'
 
 interface MediaItem {
   id: string
@@ -14,8 +17,8 @@ export default function AddTopicPage() {
   const [formData, setFormData] = useState({
     title: '',
     date: '',
-    description: '',
-    image: '', // stores selected image URL
+    description: null, // will store Lexical JSON
+    image: '',
   })
 
   const [images, setImages] = useState<MediaItem[] | null>(null)
@@ -36,7 +39,7 @@ export default function AddTopicPage() {
     fetchImages()
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
@@ -45,21 +48,17 @@ export default function AddTopicPage() {
   }
 
   const handleImageSelect = (id: string) => {
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        image: id,
-      }
-      console.log('Selected image ID:', updated.image) // ✅ Logs the image ID
-      return updated
-    })
+    setFormData((prev) => ({
+      ...prev,
+      image: id,
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.image || !formData.title || !formData.date || !formData.description) {
-      alert('All fields are required including image.')
+      alert('All fields are required including image and description.')
       return
     }
 
@@ -77,12 +76,11 @@ export default function AddTopicPage() {
         throw new Error(errorData.error || 'Upload failed')
       }
 
-      const result = await res.json()
       alert('Topic created successfully!')
       setFormData({
         title: '',
         date: '',
-        description: '',
+        description: null,
         image: '',
       })
     } catch (err) {
@@ -95,6 +93,22 @@ export default function AddTopicPage() {
 
   return (
     <div>
+      <header className="header">
+        <div className="logo">
+          <Image
+            src={'https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg'}
+            alt={'logo'}
+            width={50}
+            height={50}
+          />
+          <span>Gogoogle Keep</span>
+        </div>
+        <nav className="nav">
+          <Link href="/topics/add">Add a Topic</Link>
+          <Link href="/topics/addmedia">Add a Media</Link>
+          <Link href="/topics">Home</Link>
+        </nav>
+      </header>
       <center>
         <h1>Add a Topic</h1>
       </center>
@@ -119,12 +133,13 @@ export default function AddTopicPage() {
 
         <div>
           <label>Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            placeholder="e.g., Description..."
-            onChange={handleChange}
-            required
+          <LexicalEditor
+            onChange={(json) => {
+              setFormData((prev) => ({
+                ...prev,
+                description: json,
+              }))
+            }}
           />
         </div>
 

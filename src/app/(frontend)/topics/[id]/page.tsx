@@ -31,19 +31,20 @@ export default async function TopicDetail({ params }: PageProps) {
 
     return (
       <div className="container">
-        {/* navbar */}
         <header className="header">
           <div className="logo">
             <Image
-              src={'https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg'}
-              alt={'logo'}
+              src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg"
+              alt="logo"
               width={50}
               height={50}
             />
             <span>Gogoogle Keep</span>
           </div>
           <nav className="nav">
-            <Link href="/">Home</Link>
+            <Link href="/topics/add">Add a Topic</Link>
+            <Link href="/topics/addmedia">Add a Media</Link>
+            <Link href="/topics">Home</Link>
             <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
               Admin
             </Link>
@@ -51,17 +52,20 @@ export default async function TopicDetail({ params }: PageProps) {
         </header>
 
         <main className="content">
-          <h1>{topic.title}</h1>
+          <h1 className="topic-title">{topic.title}</h1>
           <p className="topic-date">🗓 {new Date(topic.date).toLocaleDateString()}</p>
 
           {topic.image && typeof topic.image === 'object' && topic.image.url && (
-            <Image
-              src={topic.image.url}
-              alt={topic.title}
-              width={600}
-              height={600}
-              className="topic-image"
-            />
+            <div className="image-container">
+              <Image
+                src={topic.image.url}
+                alt={topic.title}
+                fill
+                className="topic-image"
+                style={{ objectFit: 'cover' }}
+                sizes="100vw"
+              />
+            </div>
           )}
 
           <div className="topic-description">
@@ -71,7 +75,7 @@ export default async function TopicDetail({ params }: PageProps) {
         </main>
 
         <footer className="footer">
-          <Link href="/" className="codeLink">
+          <Link href="/" className="back-link">
             ← Back to topics
           </Link>
         </footer>

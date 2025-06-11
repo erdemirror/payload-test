@@ -1,6 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import config from '@/payload.config'
+import dynamic from 'next/dynamic'
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
+import LexicalEditor from '../../components/LexicalEditor' // ✅ correct path
+import Link from 'next/link'
 
 export default function AddMediaPage() {
   const [formData, setFormData] = useState({
@@ -63,6 +68,22 @@ export default function AddMediaPage() {
 
   return (
     <div>
+      <header className="header">
+        <div className="logo">
+          <Image
+            src={'https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg'}
+            alt={'logo'}
+            width={50}
+            height={50}
+          />
+          <span>Gogoogle Keep</span>
+        </div>
+        <nav className="nav">
+          <Link href="/topics/add">Add a Topic</Link>
+          <Link href="/topics/addmedia">Add a Media</Link>
+          <Link href="/topics">Home</Link>
+        </nav>
+      </header>
       <center>
         <h1>Add a Media</h1>
       </center>

@@ -37,7 +37,7 @@ export default async function HomePage() {
         <nav className="nav">
           <Link href="/topics/add">Add a Topic</Link>
           <Link href="/topics/addmedia">Add a Media</Link>
-          <Link href="/">Home</Link>
+          <Link href="/topics">Home</Link>
           <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
             Admin
           </Link>
