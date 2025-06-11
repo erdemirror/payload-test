@@ -38,7 +38,6 @@ export default function AddMediaPage() {
     payloadFormData.append('alt', formData.alt)
 
     try {
-      // Updated to point to your custom route
       const res = await fetch('/my-route', {
         method: 'POST',
         body: payloadFormData,

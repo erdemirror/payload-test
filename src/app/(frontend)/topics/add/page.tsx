@@ -1,14 +1,40 @@
 'use client'
 
-import { useState } from 'react'
-import '../../styles.css'
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 
-export default function MyForm() {
+interface MediaItem {
+  id: string
+  url: string
+  alt: string
+  filename: string
+}
+
+export default function AddTopicPage() {
   const [formData, setFormData] = useState({
     title: '',
     date: '',
     description: '',
+    image: '', // stores selected image URL
   })
+
+  const [images, setImages] = useState<MediaItem[] | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await fetch('/my-route')
+        const data = await res.json()
+        setImages(data.data || [])
+      } catch (err) {
+        console.error('Failed to fetch images:', err)
+        setImages([])
+      }
+    }
+
+    fetchImages()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -18,17 +44,49 @@ export default function MyForm() {
     }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({
-        ...prev,
-        image: e.target.files![0],
-      }))
-    }
+  const handleImageSelect = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!formData.image || !formData.title || !formData.date || !formData.description) {
+      alert('All fields are required including image.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const res = await fetch('/my-route', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Upload failed')
+      }
+
+      const result = await res.json()
+      alert('Topic created successfully!')
+      setFormData({
+        title: '',
+        date: '',
+        description: '',
+        image: '',
+      })
+    } catch (err) {
+      console.error(err)
+      alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -39,58 +97,63 @@ export default function MyForm() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="title">Title</label>
+          <label>Title</label>
           <input
             type="text"
-            id="title"
             name="title"
-            placeholder="e.g., helo"
             value={formData.title}
+            placeholder="e.g., A photo"
             onChange={handleChange}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="date">Date</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
+          <label>Date</label>
+          <input type="date" name="date" value={formData.date} onChange={handleChange} required />
         </div>
 
         <div>
-          <label htmlFor="description">Description</label>
+          <label>Description</label>
           <textarea
-            id="description"
             name="description"
             value={formData.description}
+            placeholder="e.g., Description..."
             onChange={handleChange}
-            rows={4}
-            placeholder="e.g., helo"
             required
           />
         </div>
 
-        {/* <div>
-          <label htmlFor="image">Image</label>
-          <input
-            type="image"
-            id="image"
-            name="image"
-            placeholder="e.g., helo"
-            onChange={handleChange}
-            required
-          />
-        </div> */}
+        <div>
+          <label>Select an Image</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {images === null ? (
+              <p>Loading images...</p>
+            ) : images.length === 0 ? (
+              <p>No images found.</p>
+            ) : (
+              images.map((media) => (
+                <Image
+                  key={media.id}
+                  src={media.url}
+                  alt={media.alt || 'Image'}
+                  width={100}
+                  height={100}
+                  onClick={() => handleImageSelect(media.url)}
+                  style={{
+                    objectFit: 'cover',
+                    border: formData.image === media.url ? '3px solid blue' : '1px solid gray',
+                    cursor: 'pointer',
+                  }}
+                />
+              ))
+            )}
+          </div>
+        </div>
 
-        {/* --- NEW SECTION FOR IMAGE ALT TEXT --- */}
-
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Submitting...' : 'Submit'}
+        </button>
       </form>
     </div>
   )
