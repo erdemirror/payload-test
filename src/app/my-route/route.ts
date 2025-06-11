@@ -1,4 +1,3 @@
-// app/my-route/route.ts
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextRequest } from 'next/server'
@@ -10,10 +9,10 @@ export const GET = async (request: Request) => {
       config: configPromise,
     })
 
-    // Get all media documents from the media collection
+    //sort media
     const media = await payload.find({
       collection: 'media',
-      limit: 1000,
+      limit: 5,
       sort: '-createdAt',
       where: {
         mimeType: {
@@ -45,7 +44,6 @@ export const POST = async (request: NextRequest) => {
       config: configPromise,
     })
 
-    // Check if this is a file upload (FormData) or topic creation (JSON)
     const contentType = request.headers.get('content-type')
 
     if (contentType?.includes('multipart/form-data')) {
@@ -92,7 +90,6 @@ export const POST = async (request: NextRequest) => {
         message: 'Media uploaded successfully to Vercel Blob',
       })
     } else {
-      // Handle topic creation (JSON)
       const body = await request.json()
       const { title, date, description, image } = body
 
@@ -102,12 +99,12 @@ export const POST = async (request: NextRequest) => {
 
       // Create topic in your topics collection (adjust collection name as needed)
       const topic = await payload.create({
-        collection: 'topics', // Adjust this to your actual collection name
+        collection: 'topics',
         data: {
           title,
           date,
           description,
-          image, // This should be the URL of the selected image
+          image,
         },
       })
 
