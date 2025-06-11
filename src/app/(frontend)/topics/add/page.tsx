@@ -15,7 +15,7 @@ export default function AddTopicPage() {
     title: '',
     date: '',
     description: '',
-    image: '',
+    image: '', // stores selected image URL
   })
 
   const [images, setImages] = useState<MediaItem[] | null>(null)
@@ -44,15 +44,11 @@ export default function AddTopicPage() {
     }))
   }
 
-  const handleImageSelect = (id: string) => {
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        image: id,
-      }
-      console.log('Selected image ID:', updated.image) // ✅ Logs the image ID
-      return updated
-    })
+  const handleImageSelect = (url: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,10 +107,12 @@ export default function AddTopicPage() {
             required
           />
         </div>
+
         <div>
           <label>Date</label>
           <input type="date" name="date" value={formData.date} onChange={handleChange} required />
         </div>
+
         <div>
           <label>Description</label>
           <textarea
@@ -125,6 +123,7 @@ export default function AddTopicPage() {
             required
           />
         </div>
+
         <div>
           <label>Select an Image</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -140,10 +139,10 @@ export default function AddTopicPage() {
                   alt={media.alt || 'Image'}
                   width={100}
                   height={100}
-                  onClick={() => handleImageSelect(media.id)}
+                  onClick={() => handleImageSelect(media.url)}
                   style={{
                     objectFit: 'cover',
-                    border: formData.image === media.id ? '3px solid blue' : '1px solid gray',
+                    border: formData.image === media.url ? '3px solid blue' : '1px solid gray',
                     cursor: 'pointer',
                   }}
                 />
