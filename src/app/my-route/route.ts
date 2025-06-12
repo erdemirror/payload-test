@@ -1,7 +1,7 @@
 // app/my-route/route.ts
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
 
 export const GET = async (request: Request) => {

@@ -35,18 +35,45 @@ export default async function HomePage() {
           <span>Gogoogle Keep</span>
         </div>
         <nav className="nav">
-          <Link href="/topics/add">Add a Topic</Link>
-          <Link href="/topics/addmedia">Add a Media</Link>
+          {/* if user */}
+          {user && (
+            <>
+              <Link href="/topics/add">Add a Topic</Link>
+              <Link href="/topics/addmedia">Add a Media</Link>
+            </>
+          )}
+
           <Link href="/topics">Home</Link>
-          <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
-            Admin
-          </Link>
+
+          {/* Show different links based on authentication status */}
+          {user ? (
+            <>
+              <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
+                Admin
+              </Link>
+              <span className="user-email">{user.email}</span>
+            </>
+          ) : (
+            <>
+              <Link href="/login">Login</Link>
+              <Link href="/register">Register</Link>
+            </>
+          )}
         </nav>
       </header>
 
       {/* main */}
       <main className="content">
         <h1>{user ? `${user.email} хам айн? Юу байна?` : 'Юу байна даа хамаа.'}</h1>
+
+        {/* Show authentication status message */}
+        {!user && (
+          <div className="auth-message">
+            <p>
+              Please <Link href="/login">login</Link> to create topics and media.
+            </p>
+          </div>
+        )}
 
         <h2>Topics</h2>
 
@@ -68,6 +95,18 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
+
+        {/* Show empty state if no topics and user is not logged in */}
+        {topics.docs.length === 0 && (
+          <div className="empty-state">
+            <p>No topics available.</p>
+            {user && (
+              <p>
+                <Link href="/topics/add">Create your first topic!</Link>
+              </p>
+            )}
+          </div>
+        )}
       </main>
 
       {/* footer */}

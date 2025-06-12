@@ -11,7 +11,7 @@ const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
-      required: true,
+      required: false,
     },
     // Add other profile fields here
   ],
