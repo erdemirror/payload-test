@@ -3,6 +3,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
+import { cookies } from 'next/headers'
 
 export const GET = async (request: Request) => {
   try {

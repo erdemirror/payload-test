@@ -20,7 +20,7 @@ export default function LoginForm() {
     const data = await res.json()
 
     if (res.ok) {
-      // ✅ Save token to localStorage
+      const cookieStore = await cookies()
       localStorage.setItem('token', data.token)
 
       // Optional: Save user info too
