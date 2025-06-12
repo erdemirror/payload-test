@@ -9,8 +9,7 @@ interface PageProps {
 
 export default async function TopicDetail({ params }: PageProps) {
   const { id } = params
-  const payloadConfigResolved = await config
-  const payload = await getPayload({ config: payloadConfigResolved })
+  const payload = await getPayload({ config }) // ✅ just pass config directly
 
   const topic = await payload.findByID({
     collection: 'topics',
