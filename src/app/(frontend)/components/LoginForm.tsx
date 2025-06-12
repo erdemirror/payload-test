@@ -1,106 +1,54 @@
 'use client'
-
+import { cookies } from 'next/headers'
 import { useState } from 'react'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
-import styled from 'styled-components'
-
-const FormContainer = styled.form`
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 40px 50px;
-  max-width: 400px;
-  margin: 60px auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-`
-
-const Input = styled.input`
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 1.5px solid #ddd;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: #4a90e2;
-    background-color: #f0f8ff;
-  }
-`
-
-const Button = styled.button`
-  padding: 12px 0;
-  border-radius: 12px;
-  background: #4a90e2;
-  color: white;
-  font-weight: 600;
-  font-size: 18px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background: #357abd;
-  }
-`
-
-const Message = styled.p`
-  color: white;
-  font-weight: 500;
-  min-height: 24px;
-  text-align: center;
-`
 
 export default function LoginForm() {
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [message, setMessage] = useState('')
   const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const handleLogin = async () => {
+    const res = await fetch('/my-route/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      const res = await axios.post('/my-route/login', formData)
-      setMessage('Login successful! Redirecting...')
+    const data = await res.json()
 
-      localStorage.setItem('token', res.data.token)
+    if (res.ok) {
+      // ✅ Save token to localStorage
+      localStorage.setItem('token', data.token)
 
-      setTimeout(() => {
-        router.push('/topics')
-      }, 1500)
-    } catch (err: any) {
-      setMessage(err.response?.data?.error || 'Login failed')
+      // Optional: Save user info too
+      localStorage.setItem('user', JSON.stringify(data.user))
+
+      // Redirect to your app's homepage or dashboard
+      router.push('/topics')
+    } else {
+      alert(data.error || 'Login failed')
     }
   }
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      <Input
+    <div>
+      <h2>Login</h2>
+      <input
         type="email"
-        name="email"
         placeholder="Email"
-        onChange={handleChange}
-        required
-        autoComplete="username"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
-      <Input
+      <input
         type="password"
-        name="password"
         placeholder="Password"
-        onChange={handleChange}
-        required
-        autoComplete="current-password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
       />
-      <Button type="submit">Login</Button>
-      <Message>{message}</Message>
-    </FormContainer>
+      <button onClick={handleLogin}>Login</button>
+    </div>
   )
 }

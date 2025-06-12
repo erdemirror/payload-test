@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import LexicalEditor from '../../components/LexicalEditor'
+import LexicalEditor from '../../../components/LexicalEditor'
 import Link from 'next/link'
-import { useAuth } from '../../../context/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '../../../../context/AuthContext'
+import { useRouter, useParams } from 'next/navigation'
 
 interface MediaItem {
   id: string
@@ -14,29 +14,31 @@ interface MediaItem {
   filename: string
 }
 
-export default function AddTopicPage() {
+export default function EditTopicPage() {
   const [formData, setFormData] = useState({
     title: '',
     date: '',
-    description: null, // will store Lexical JSON
+    description: null, // Lexical JSON
     image: '',
   })
-
   const [images, setImages] = useState<MediaItem[] | null>(null)
   const [loading, setLoading] = useState(false)
   const { user } = useAuth()
   const router = useRouter()
+  const { id } = useParams() // Get topic ID from route
 
+  // Redirect if not authenticated
   useEffect(() => {
     if (!user) {
-      router.push('/login') // Redirect if not authenticated
+      router.push('/login')
     }
   }, [user, router])
 
+  // Fetch images for selection
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await fetch('/my-route')
+        const res = await fetch('/my-route') // your images API
         const data = await res.json()
         setImages(data.data || [])
       } catch (err) {
@@ -47,6 +49,32 @@ export default function AddTopicPage() {
 
     fetchImages()
   }, [])
+
+  // Fetch the topic data by ID and prefill the form
+  useEffect(() => {
+    if (!id) return
+
+    const fetchTopic = async () => {
+      try {
+        const res = await fetch(`/api/topics/${id}`)
+        if (!res.ok) throw new Error('Failed to fetch topic')
+
+        const topic = await res.json()
+
+        setFormData({
+          title: topic.title || '',
+          date: topic.date ? topic.date.split('T')[0] : '',
+          description: topic.description || null,
+          image: topic.image || '',
+        })
+      } catch (err) {
+        console.error(err)
+        alert('Failed to load topic data')
+      }
+    }
+
+    fetchTopic()
+  }, [id])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -74,36 +102,34 @@ export default function AddTopicPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/my-route', {
-        method: 'POST',
+      const res = await fetch(`/topics/${id}`, {
+        method: 'PUT', // update method
+
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       })
-
+      console.log(res)
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Upload failed')
+        throw new Error(errorData.error || 'Update failed')
       }
 
-      alert('Topic created successfully!')
-      setFormData({
-        title: '',
-        date: '',
-        description: null,
-        image: '',
-      })
+      alert('Topic updated successfully!')
+      router.push(`/topics/${id}`)
     } catch (err) {
       console.error(err)
-      alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      alert(`Update failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
   }
+
   if (!user) return null
+
   return (
     <div>
       <center>
-        <h1>Add a Topic</h1>
+        <h1>Edit Topic</h1>
       </center>
 
       <form onSubmit={handleSubmit}>
@@ -164,7 +190,7 @@ export default function AddTopicPage() {
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Submitting...' : 'Submit'}
+          {loading ? 'Updating...' : 'Update Topic'}
         </button>
       </form>
     </div>

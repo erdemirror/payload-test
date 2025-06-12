@@ -1,13 +1,21 @@
 'use client'
 
-import config from '@/payload.config'
-import dynamic from 'next/dynamic'
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import LexicalEditor from '../../components/LexicalEditor' // ✅ correct path
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '../../../context/AuthContext'
 
 export default function AddMediaPage() {
+  const { user } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login') // Redirect if not authenticated
+    }
+  }, [user, router])
+
   const [formData, setFormData] = useState({
     image: null as File | null,
     alt: '',
@@ -56,34 +64,21 @@ export default function AddMediaPage() {
       const data = await res.json()
       alert('Upload successful!')
 
-      // Reset form after successful upload
+      // Reset form
       setFormData({
         image: null,
         alt: '',
       })
     } catch (err) {
       alert('Upload failed. See console for details.')
+      console.error(err)
     }
   }
 
+  if (!user) return null // Optional: you can show a spinner here
+
   return (
     <div>
-      <header className="header">
-        <div className="logo">
-          <Image
-            src={'https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg'}
-            alt={'logo'}
-            width={50}
-            height={50}
-          />
-          <span>Gogoogle Keep</span>
-        </div>
-        <nav className="nav">
-          <Link href="/topics/add">Add a Topic</Link>
-          <Link href="/topics/addmedia">Add a Media</Link>
-          <Link href="/topics">Home</Link>
-        </nav>
-      </header>
       <center>
         <h1>Add a Media</h1>
       </center>

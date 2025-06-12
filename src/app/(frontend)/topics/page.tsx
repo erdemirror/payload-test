@@ -1,19 +1,27 @@
-import { headers as getHeaders } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
-import React from 'react'
-import { fileURLToPath } from 'url'
+import { headers as getHeaders } from 'next/headers'
 
 import config from '@/payload.config'
+import Navbar from '../components/Navbar'
+import { useAuth } from '../../context/AuthContext'
 import '../styles.css'
-import { RichText } from '@payloadcms/richtext-lexical/react'
 
 export default async function HomePage() {
   const headers = await getHeaders()
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
+
+  let user = null
+
+  try {
+    const authResult = await payload.auth({ headers })
+    user = authResult?.user || null
+  } catch (error) {
+    // Not logged in or invalid token
+    user = null
+  }
 
   const topics = await payload.find({
     collection: 'topics',
@@ -23,50 +31,13 @@ export default async function HomePage() {
 
   return (
     <div className="container">
-      {/* navbar */}
-      <header className="header">
-        <div className="logo">
-          <Image
-            src={'https://upload.wikimedia.org/wikipedia/commons/c/cb/Google_Keep_2020_Logo.svg'}
-            alt={'logo'}
-            width={50}
-            height={50}
-          />
-          <span>Gogoogle Keep</span>
-        </div>
-        <nav className="nav">
-          {/* if user */}
-          {user && (
-            <>
-              <Link href="/topics/add">Add a Topic</Link>
-              <Link href="/topics/addmedia">Add a Media</Link>
-            </>
-          )}
+      {/* Navbar */}
+      <Navbar />
 
-          <Link href="/topics">Home</Link>
-
-          {/* Show different links based on authentication status */}
-          {user ? (
-            <>
-              <Link href={payloadConfig.routes.admin} target="_blank" rel="noreferrer">
-                Admin
-              </Link>
-              <span className="user-email">{user.email}</span>
-            </>
-          ) : (
-            <>
-              <Link href="/login">Login</Link>
-              <Link href="/register">Register</Link>
-            </>
-          )}
-        </nav>
-      </header>
-
-      {/* main */}
+      {/* Main content */}
       <main className="content">
         <h1>{user ? `${user.email} хам айн? Юу байна?` : 'Юу байна даа хамаа.'}</h1>
 
-        {/* Show authentication status message */}
         {!user && (
           <div className="auth-message">
             <p>
@@ -96,7 +67,6 @@ export default async function HomePage() {
           ))}
         </div>
 
-        {/* Show empty state if no topics and user is not logged in */}
         {topics.docs.length === 0 && (
           <div className="empty-state">
             <p>No topics available.</p>
@@ -109,7 +79,7 @@ export default async function HomePage() {
         )}
       </main>
 
-      {/* footer */}
+      {/* Footer */}
       <footer className="footer">
         <p>Y&apos;all wondering who made this?</p>
         <Link className="codeLink" href="https://www.instagram.com/eye0fsk4d1">
