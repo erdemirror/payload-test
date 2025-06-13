@@ -1,6 +1,6 @@
 'use client'
-import { cookies } from 'next/headers'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { getCookie, deleteCookie } from '@/lib/cookies'
 
 type User = {
   id: string
@@ -18,16 +18,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user')
+    const storedUser = getCookie('user')
 
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch (e) {
+        console.error('Failed to parse user cookie', e)
+      }
     }
   }, [])
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    deleteCookie('token')
+    deleteCookie('user')
     setUser(null)
     window.location.href = '/login'
   }

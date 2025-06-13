@@ -9,6 +9,7 @@ import { useAuth } from '../../../context/AuthContext'
 export default function AddMediaPage() {
   const { user } = useAuth()
   const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -40,9 +41,11 @@ export default function AddMediaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
 
     if (!formData.image || !formData.alt) {
       alert('Both image and alt text are required.')
+      setIsSubmitting(false)
       return
     }
 
@@ -63,24 +66,24 @@ export default function AddMediaPage() {
 
       const data = await res.json()
       alert('Upload successful!')
-
-      // Reset form
-      setFormData({
-        image: null,
-        alt: '',
-      })
+      router.push('/topics') // Redirect to topics page after successful upload
     } catch (err) {
       alert('Upload failed. See console for details.')
       console.error(err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  if (!user) return null // Optional: you can show a spinner here
+  if (!user) return null
 
   return (
     <div>
       <center>
         <h1>Add a Media</h1>
+        <Link href="/topics" style={{ margin: '10px 0', display: 'block' }}>
+          Back to Topics
+        </Link>
       </center>
 
       <form onSubmit={handleSubmit}>
@@ -92,6 +95,7 @@ export default function AddMediaPage() {
             name="image"
             accept="image/*"
             onChange={handleImageChange}
+            required
           />
         </div>
 
@@ -108,7 +112,9 @@ export default function AddMediaPage() {
           />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Uploading...' : 'Submit'}
+        </button>
       </form>
     </div>
   )

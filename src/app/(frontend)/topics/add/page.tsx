@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import LexicalEditor from '../../components/LexicalEditor'
-import Link from 'next/link'
 import { useAuth } from '../../../context/AuthContext'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface MediaItem {
   id: string
@@ -18,22 +18,27 @@ export default function AddTopicPage() {
   const [formData, setFormData] = useState({
     title: '',
     date: '',
-    description: null, // will store Lexical JSON
+    description: null,
     image: '',
   })
 
   const [images, setImages] = useState<MediaItem[] | null>(null)
   const [loading, setLoading] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const { user } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     if (!user) {
-      router.push('/login') // Redirect if not authenticated
+      router.push('/login')
+    } else {
+      setAuthChecked(true)
     }
   }, [user, router])
 
   useEffect(() => {
+    if (!authChecked) return
+
     const fetchImages = async () => {
       try {
         const res = await fetch('/my-route')
@@ -46,7 +51,7 @@ export default function AddTopicPage() {
     }
 
     fetchImages()
-  }, [])
+  }, [authChecked])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -86,12 +91,7 @@ export default function AddTopicPage() {
       }
 
       alert('Topic created successfully!')
-      setFormData({
-        title: '',
-        date: '',
-        description: null,
-        image: '',
-      })
+      router.push('/topics') // Redirect after successful submission
     } catch (err) {
       console.error(err)
       alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -99,11 +99,15 @@ export default function AddTopicPage() {
       setLoading(false)
     }
   }
+
   if (!user) return null
   return (
     <div>
       <center>
         <h1>Add a Topic</h1>
+        <Link href="/topics" style={{ margin: '10px 0', display: 'block' }}>
+          Back to Topics
+        </Link>
       </center>
 
       <form onSubmit={handleSubmit}>

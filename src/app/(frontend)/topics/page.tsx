@@ -36,15 +36,7 @@ export default async function HomePage() {
 
       {/* Main content */}
       <main className="content">
-        <h1>{user ? `${user.email} хам айн? Юу байна?` : 'Юу байна даа хамаа.'}</h1>
-
-        {!user && (
-          <div className="auth-message">
-            <p>
-              Please <Link href="/login">login</Link> to create topics and media.
-            </p>
-          </div>
-        )}
+        <h1>{'Бузартайгаа ч хутгалдаж байна даа.'}</h1>
 
         <h2>Topics</h2>
 
