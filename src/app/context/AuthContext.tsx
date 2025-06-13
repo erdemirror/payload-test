@@ -1,6 +1,6 @@
 'use client'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { getCookie, deleteCookie } from '@/lib/cookies'
+import { getCookie, setCookie, deleteCookie } from '@/lib/cookies'
 
 type User = {
   id: string
@@ -9,6 +9,7 @@ type User = {
 
 type AuthContextType = {
   user: User | null
+  login: (user: User, token: string) => void
   logout: () => void
 }
 
@@ -19,7 +20,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const storedUser = getCookie('user')
-
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser))
@@ -29,14 +29,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const login = (user: User, token: string) => {
+    setCookie('user', JSON.stringify(user))
+    setCookie('token', token)
+    setUser(user) // ✅ Update React state immediately
+  }
+
   const logout = () => {
-    deleteCookie('token')
     deleteCookie('user')
+    deleteCookie('token')
     setUser(null)
     window.location.href = '/login'
   }
 
-  return <AuthContext.Provider value={{ user, logout }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {

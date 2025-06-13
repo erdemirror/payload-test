@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { setCookie } from '@/lib/cookies'
+import { useAuth } from '../../context/AuthContext'
 import Link from 'next/link'
 
 export default function LoginForm() {
   const router = useRouter()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,18 +20,15 @@ export default function LoginForm() {
     try {
       const res = await fetch('/my-route/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
       const data = await res.json()
 
       if (res.ok) {
-        setCookie('token', data.token)
-        setCookie('user', JSON.stringify(data.user))
-        router.push('/topics')
+        login(data.user, data.token) // ✅ Update context
+        router.push('/topics') // or dashboard
       } else {
         setError(data.error || 'Login failed')
       }
@@ -63,6 +61,11 @@ export default function LoginForm() {
       <div className="register-link">
         Don&apos;t have an account? <Link href="/register">Register</Link>
       </div>
+      <center>
+        <div className="Home-link">
+          <Link href="/topics">Topics</Link>
+        </div>
+      </center>
 
       <style jsx>{`
         .login-container {
@@ -77,13 +80,6 @@ export default function LoginForm() {
           flex-direction: column;
           gap: 25px;
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        h2 {
-          color: white;
-          text-align: center;
-          margin: 0 0 10px 0;
-          font-size: 24px;
         }
 
         input {
@@ -130,6 +126,12 @@ export default function LoginForm() {
         }
 
         .register-link {
+          text-align: center;
+          color: white;
+          font-size: 14px;
+        }
+
+        .Home-link {
           text-align: center;
           color: white;
           font-size: 14px;

@@ -55,6 +55,12 @@ export default function RegisterForm() {
       <div className="register-link">
         Already have an account? <Link href="/login">Login</Link>
       </div>
+      <center>
+        {' '}
+        <div className="Home-link">
+          <Link href="/topics">Topics</Link>
+        </div>
+      </center>
 
       <style jsx>{`
         .form-container {
