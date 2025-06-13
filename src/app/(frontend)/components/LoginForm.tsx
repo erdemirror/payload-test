@@ -61,7 +61,7 @@ export default function LoginForm() {
       {error && <p className="error-message">{error}</p>}
 
       <div className="register-link">
-        Don't have an account? <Link href="/register">Register</Link>
+        Don&apos;t have an account? <Link href="/register">Register</Link>
       </div>
 
       <style jsx>{`

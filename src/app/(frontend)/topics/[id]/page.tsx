@@ -1,13 +1,9 @@
-import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
 import config from '@/payload.config'
 import TopicDetailClient from './TopicDetailClient'
 
-interface PageProps {
-  params: { id: string }
-}
-
-export default async function TopicDetail({ params }: PageProps) {
+export default async function TopicDetail({ params }: { params: { id: string } }) {
   const { id } = params
   const payload = await getPayload({ config })
 
