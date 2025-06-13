@@ -9,12 +9,7 @@ interface PageProps {
 
 export default async function TopicDetail({ params }: PageProps) {
   const { id } = params
-<<<<<<< HEAD
   const payload = await getPayload({ config })
-=======
-  const payloadConfigResolved = await config
-  const payload = await getPayload({ config: payloadConfigResolved })
->>>>>>> parent of 6dac979 ([fix] try deploying after changing type)
 
   const topic = await payload.findByID({
     collection: 'topics',
