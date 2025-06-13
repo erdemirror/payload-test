@@ -1,11 +1,11 @@
 'use client'
+
 import { useAuth } from '../../../context/AuthContext'
 import Image from 'next/image'
 import Link from 'next/link'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { getCookie } from '@/lib/cookies'
 
 export default function TopicDetailClient({ topic }: { topic: any }) {
   const { user, logout } = useAuth()
@@ -17,8 +17,8 @@ export default function TopicDetailClient({ topic }: { topic: any }) {
 
     setDeleting(true)
 
-    // Get token from cookies
-    const token = getCookie('token')
+    // Get token from localStorage
+    const token = localStorage.getItem('token')
     if (!token) {
       alert('You must be logged in to delete')
       setDeleting(false)

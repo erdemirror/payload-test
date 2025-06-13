@@ -97,17 +97,19 @@ export const POST = async (request: NextRequest) => {
       const { title, date, description, image } = body
 
       if (!title || !date || !description || !image) {
-        return Response.json({ error: 'All fields are required' }, { status: 400 })
+        return Response.json([{ message: 'All fields are required' }], { status: 400 })
       }
 
-      // Create topic in your topics collection (adjust collection name as needed)
+      console.log('Creating topic with data:', { title, date, description, image })
+
+      // Create topic in your topics collection
       const topic = await payload.create({
-        collection: 'topics', // Adjust this to your actual collection name
+        collection: 'topics',
         data: {
           title,
           date,
           description,
-          image, // This should be the URL of the selected image
+          image,
         },
       })
 
@@ -119,12 +121,71 @@ export const POST = async (request: NextRequest) => {
     }
   } catch (error) {
     console.error('API error:', error)
-    return Response.json(
-      {
-        error: 'Failed to process request',
-        details: error instanceof Error ? error.message : 'Unknown error occurred',
+
+    // Return error in the format you specified
+    if (error instanceof Error && error.message.includes('not allowed')) {
+      return Response.json([{ message: 'You are not allowed to perform this action.' }], {
+        status: 403,
+      })
+    }
+
+    return Response.json([{ message: 'Failed to process request' }], { status: 500 })
+  }
+}
+
+export const PUT = async (request: NextRequest) => {
+  try {
+    const payload = await getPayload({
+      config: configPromise,
+    })
+
+    // Get the topic ID from query parameters
+    const url = new URL(request.url)
+    const topicId = url.searchParams.get('id')
+
+    if (!topicId) {
+      return Response.json([{ message: 'Topic ID is required' }], { status: 400 })
+    }
+
+    // Parse the request body
+    const body = await request.json()
+    const { title, date, description, image } = body
+
+    // Validate required fields
+    if (!title || !date || !description || !image) {
+      return Response.json([{ message: 'All fields are required' }], { status: 400 })
+    }
+
+    console.log('Updating topic with ID:', topicId)
+    console.log('Update data:', { title, date, description, image })
+
+    // Update the topic
+    const updatedTopic = await payload.update({
+      collection: 'topics',
+      id: topicId,
+      data: {
+        title,
+        date,
+        description,
+        image,
       },
-      { status: 500 },
-    )
+    })
+
+    return Response.json({
+      success: true,
+      data: updatedTopic,
+      message: 'Topic updated successfully',
+    })
+  } catch (error) {
+    console.error('Error updating topic:', error)
+
+    // Return error in the format you specified
+    if (error instanceof Error && error.message.includes('not allowed')) {
+      return Response.json([{ message: 'You are not allowed to perform this action.' }], {
+        status: 403,
+      })
+    }
+
+    return Response.json([{ message: 'Failed to update topic' }], { status: 500 })
   }
 }

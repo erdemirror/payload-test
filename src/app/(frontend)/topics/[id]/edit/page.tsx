@@ -14,6 +14,18 @@ interface MediaItem {
   filename: string
 }
 
+// Cookie utility function
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null
+
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null
+  }
+  return null
+}
+
 export default function EditTopicPage() {
   const [formData, setFormData] = useState({
     title: '',
@@ -25,7 +37,7 @@ export default function EditTopicPage() {
   const [loading, setLoading] = useState(false)
   const { user } = useAuth()
   const router = useRouter()
-  const { id } = useParams() // Get topic ID from route
+  const { id } = useParams()
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -56,8 +68,38 @@ export default function EditTopicPage() {
 
     const fetchTopic = async () => {
       try {
-        const res = await fetch(`/api/topics/${id}`)
-        if (!res.ok) throw new Error('Failed to fetch topic')
+        // Get token from cookies for the GET request too
+        const token = getCookie('token')
+
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        }
+
+        // Add authorization header if token exists
+        if (token) {
+          headers.Authorization = `Bearer ${token}`
+        }
+
+        const res = await fetch(`/api/topics/${id}`, {
+          headers,
+        })
+
+        if (!res.ok) {
+          const errorData = await res.json()
+
+          // Handle the specific error format
+          let errorMessage = 'Failed to load topic'
+
+          if (Array.isArray(errorData) && errorData.length > 0 && errorData[0].message) {
+            errorMessage = errorData[0].message
+          } else if (errorData.error) {
+            errorMessage = errorData.error
+          } else if (errorData.message) {
+            errorMessage = errorData.message
+          }
+
+          throw new Error(errorMessage)
+        }
 
         const topic = await res.json()
 
@@ -68,8 +110,8 @@ export default function EditTopicPage() {
           image: topic.image || '',
         })
       } catch (err) {
-        console.error(err)
-        alert('Failed to load topic data')
+        console.error('Failed to fetch topic:', err)
+        alert(`Failed to load topic data: ${err instanceof Error ? err.message : 'Unknown error'}`)
       }
     }
 
@@ -101,18 +143,42 @@ export default function EditTopicPage() {
 
     setLoading(true)
 
-    try {
-      const res = await fetch(`/topics/${id}`, {
-        method: 'PUT', // update method
+    const token = getCookie('token')
 
-        headers: { 'Content-Type': 'application/json' },
+    if (!token) {
+      alert('You must be logged in to update')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const updateUrl = `/my-route?id=${id}`
+
+      const res = await fetch(updateUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       })
-      console.log(res)
+
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Update failed')
+
+        let errorMessage = 'Update failed'
+        if (Array.isArray(errorData) && errorData[0]?.message) {
+          errorMessage = errorData[0].message
+        } else if (errorData.error) {
+          errorMessage = errorData.error
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        }
+
+        throw new Error(errorMessage)
       }
+
+      const responseData = await res.json()
 
       alert('Topic updated successfully!')
       router.push(`/topics/${id}`)
