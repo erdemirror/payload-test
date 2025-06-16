@@ -100,8 +100,6 @@ export const POST = async (request: NextRequest) => {
         return Response.json([{ message: 'All fields are required' }], { status: 400 })
       }
 
-      console.log('Creating topic with data:', { title, date, description, image })
-
       // Create topic in your topics collection
       const topic = await payload.create({
         collection: 'topics',
@@ -155,9 +153,6 @@ export const PUT = async (request: NextRequest) => {
     if (!title || !date || !description || !image) {
       return Response.json([{ message: 'All fields are required' }], { status: 400 })
     }
-
-    console.log('Updating topic with ID:', topicId)
-    console.log('Update data:', { title, date, description, image })
 
     // Update the topic
     const updatedTopic = await payload.update({
